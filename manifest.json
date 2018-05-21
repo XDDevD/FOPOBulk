@@ -1,15 +1,23 @@
 {
     
     "manifest_version": 2,
-    "name": "UtilSofts",
+    "name": "FOPOBulk",
     "version": "0.120.05.2",
     "icons": {
-        "16": "Dx.png",
-        "48": "Dx.png",
-        "128": "Dx.png"
+        "16": "fopo.png",
+        "48": "fopo.png",
+        "128": "fopo.png"
     },
     "browser_action": {
         "default_popup": "main.html",
-        "default_icon": "Dx.png"
+        "default_icon": "fopo.png"
+    },
+    
+  "permissions": ["tabs", "*://*.fopo.com.ar/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://*.fopo.com.ar/*"],
+      "js": ["fopoBulk.js"]
     }
+  ]
 }
