@@ -1,0 +1,11 @@
+#direcxn {
+    display: none;
+}
+
+#direcxn:checked+label::after {
+    content: 'Obfuscate';
+}
+
+#direcxn:not(:checked)+label::after {
+    content: 'Deobfuscate';
+}

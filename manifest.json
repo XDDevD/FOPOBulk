@@ -21,6 +21,10 @@
       "libs/FileSaver.js",
       "libs/jszip.js",
       "fopoBulk.js"
+    ],
+    "css": [
+      "css/fopoBulk.css"
+
     ]
   }]
 }

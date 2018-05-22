@@ -9,13 +9,29 @@
 // jqx.setAttribute("src",jqURL);;
 // document.body.appendChild(jqx);
 // console.log($);
+
+//deobfuscate || obfuscate
 window.ZIP = new JSZip();
 window.FileSCount = 0;
 window.FilesDone = 0;
+window.direction = "obfuscate";
+window.Keyzs = "";
 var FileBrw = $("<input/>", {
     type: "file",
     webkitdirectory: "webkitdirectory",
     mozdirectory: "mozdirectory"
+}).appendTo(document.body);
+
+var DirectnElm = $("<input/>", {
+    type: "checkbox",
+    id: "direcxn",
+    checked: 'checked'
+}).appendTo(document.body);
+var DirectnLblElm = $("<label/>", {
+    for: "direcxn"
+}).text('Type :').appendTo(document.body);
+var KeyYYY = $("<input/>", {
+    type: "text"
 }).appendTo(document.body);
 
 FileBrw[0].onchange = function (e) {
@@ -23,24 +39,30 @@ FileBrw[0].onchange = function (e) {
     window.FileSCount = 0;
     window.FilesDone = 0;
     window.ZIP = new JSZip();
+    window.direction = !DirectnElm.is(":checked") ? "deobfuscate" : "obfuscate";
+    window.Keyzs = KeyYYY.val();
+    window.ZIP.file(`key`, Keyzs);
+
     // console.log(this.files);
-    var AllFiles = Array.from(this.files);
-    var FileNames = AllFiles.map(v => v.webkitRelativePath);
+    var AllUpFiles = Array.from(this.files);
+    var FileNames = AllUpFiles.map(v => v.webkitRelativePath);
     // console.log(FileNames);
     // if (AllFiles[0]) {
     //     loadFileAsText(AllFiles[0]);
     // }
+    var AllFiles = AllUpFiles.filter(function (fil_1) {
+        var isPhpFile = fil_1.webkitRelativePath.search(/(.php)$/) > -1;
+        // if(!isPhpFile){
+        //     window.ZIP
+        // }
+        return isPhpFile;
+    });
 
     window.FileSCount = AllFiles.length;
     AllFiles.forEach(function (filx) {
         loadFileAsText(filx);
-
     });
 };
-
-var KeyYYY = $("<input/>", {
-    type: "text"
-}).appendTo(document.body);
 
 function loadFileAsText(file) {
     var fileToLoad = file;
@@ -78,14 +100,15 @@ function loadFileAsText(file) {
             data: JSON.stringify({
                 "direction": "obfuscate",
                 "input": textFromFileLoaded,
-                "key": KeyYYY.val()
+                "key": window.Keyzs
             }),
             processData: false,
             success: function (msg) {
                 // console.log(msg);
-                window.ZIP.file(fileToLoad.webkitRelativePath, msg.output);
+                var Op = new String(msg.output).replace(/\/\*\nObfuscation([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/+/g, ``);
+                window.ZIP.file(fileToLoad.webkitRelativePath, Op);
                 window.FilesDone++;
-                
+
                 if (window.FilesDone == window.FileSCount) {
                     window.ZIP.generateAsync({
                         type: "blob"
