@@ -50,14 +50,31 @@ FileBrw[0].onchange = function (e) {
     // if (AllFiles[0]) {
     //     loadFileAsText(AllFiles[0]);
     // }
+
     var AllFiles = AllUpFiles.filter(function (fil_1) {
         var isPhpFile = fil_1.webkitRelativePath.search(/(.php)$/) > -1;
-        // if(!isPhpFile){
-        //     window.ZIP
-        // }
+        if (!isPhpFile) {
+            // window.ZIP
+            var reader = new FileReader();
+            reader.readAsDataURL(fil_1);
+            reader.onload = function () {
+                window.ZIP.file(fileToLoad.webkitRelativePath, reader.result, {
+                    "base64": true
+                });
+                window.FilesDone++;
+
+                //   console.log(reader.result);
+            };
+            reader.onerror = function (error) {
+                //   console.log('Error: ', error);
+                window.FilesDone++;
+            };
+
+        }
         return isPhpFile;
     });
 
+    // window.FileSCount = AllFiles.length;
     window.FileSCount = AllFiles.length;
     AllFiles.forEach(function (filx) {
         loadFileAsText(filx);
@@ -98,7 +115,7 @@ function loadFileAsText(file) {
             },
             url: "http://www.fopo.com.ar/api/",
             data: JSON.stringify({
-                "direction": "obfuscate",
+                "direction": window.direction,
                 "input": textFromFileLoaded,
                 "key": window.Keyzs
             }),
@@ -113,7 +130,7 @@ function loadFileAsText(file) {
                     window.ZIP.generateAsync({
                         type: "blob"
                     }).then(function (blob) { // 1) generate the zip file
-                        saveAs(blob, `FOPO-BULK-${(new Date()).getMilliseconds()}.zip`); // 2) trigger the download
+                        saveAs(blob, `FOPO-BULK-${(new Date()).toJSON()}.zip`); // 2) trigger the download
                     }, function (err) {
                         jQuery("#blob").text(err);
                     });
