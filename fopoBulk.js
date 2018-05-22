@@ -15,17 +15,9 @@ var FileBrw = $("<input/>", {
     mozdirectory: "mozdirectory"
 }).appendTo(document.body);
 
-FileBrw[0].onchange = function (e) {
-    // console.log(this.files);
-    var AllFiles = Array.from(this.files);
-    var FileNames = AllFiles.map(v => v.webkitRelativePath);
-    // console.log(FileNames);
-    if (AllFiles[0]) {
-        loadFileAsText(AllFiles[0]);
-    }
-
-};
-
+var KeyYYY = $("<input/>", {
+    type: "text"
+}).appendTo(document.body);
 
 function loadFileAsText(file) {
     var fileToLoad = file;
@@ -63,7 +55,7 @@ function loadFileAsText(file) {
             data: JSON.stringify({
                 "direction": "obfuscate",
                 "input":textFromFileLoaded ,
-                "key": ""
+                "key": KeyYYY.val()
             }),
             processData: false,
             success: function (msg) {
