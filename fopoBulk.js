@@ -54,7 +54,7 @@ function loadFileAsText(file) {
 
                 request.setRequestHeader("Pragma", "no-cache");
                 request.setRequestHeader("Cache-Control", "no-cache");
-                request.setRequestHeader("Accept", "application/json, text/plain, */*");
+                // request.setRequestHeader("Accept", "application/json, text/plain, */*");
                 request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                 request.setRequestHeader("Accept-Encoding", "gzip, deflate");
                 request.setRequestHeader("Accept-Language", "en-US,en;q=0.9");
