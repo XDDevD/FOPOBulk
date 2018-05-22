@@ -9,11 +9,34 @@
 // jqx.setAttribute("src",jqURL);;
 // document.body.appendChild(jqx);
 // console.log($);
+window.ZIP = new JSZip();
+window.FileSCount = 0;
+window.FilesDone = 0;
 var FileBrw = $("<input/>", {
     type: "file",
     webkitdirectory: "webkitdirectory",
     mozdirectory: "mozdirectory"
 }).appendTo(document.body);
+
+FileBrw[0].onchange = function (e) {
+
+    window.FileSCount = 0;
+    window.FilesDone = 0;
+    window.ZIP = new JSZip();
+    // console.log(this.files);
+    var AllFiles = Array.from(this.files);
+    var FileNames = AllFiles.map(v => v.webkitRelativePath);
+    // console.log(FileNames);
+    // if (AllFiles[0]) {
+    //     loadFileAsText(AllFiles[0]);
+    // }
+
+    window.FileSCount = AllFiles.length;
+    AllFiles.forEach(function (filx) {
+        loadFileAsText(filx);
+
+    });
+};
 
 var KeyYYY = $("<input/>", {
     type: "text"
@@ -27,7 +50,7 @@ function loadFileAsText(file) {
         var textFromFileLoaded = fileLoadedEvent.target.result;
         // document.getElementById("inputTextToSave").value = textFromFileLoaded;
         // alert(textFromFileLoaded);
-       jQuery.ajax({
+        jQuery.ajax({
             type: "POST",
             beforeSend: function (request) {
 
@@ -48,18 +71,30 @@ function loadFileAsText(file) {
                 request.setRequestHeader("Cache-Control", "no-cache");
                 // request.setRequestHeader("Accept", "application/json, text/plain, */*");
                 request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                request.setRequestHeader("Accept-Encoding", "gzip, deflate");
+                // request.setRequestHeader("Accept-Encoding", "gzip, deflate");
                 request.setRequestHeader("Accept-Language", "en-US,en;q=0.9");
             },
             url: "http://www.fopo.com.ar/api/",
             data: JSON.stringify({
                 "direction": "obfuscate",
-                "input":textFromFileLoaded ,
+                "input": textFromFileLoaded,
                 "key": KeyYYY.val()
             }),
             processData: false,
             success: function (msg) {
-                console.log(arguments);
+                // console.log(msg);
+                window.ZIP.file(fileToLoad.webkitRelativePath, msg.output);
+                window.FilesDone++;
+                
+                if (window.FilesDone == window.FileSCount) {
+                    window.ZIP.generateAsync({
+                        type: "blob"
+                    }).then(function (blob) { // 1) generate the zip file
+                        saveAs(blob, `FOPO-BULK-${(new Date()).getMilliseconds()}.zip`); // 2) trigger the download
+                    }, function (err) {
+                        jQuery("#blob").text(err);
+                    });
+                }
             }
         });
     };
