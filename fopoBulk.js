@@ -56,26 +56,31 @@ FileBrw[0].onchange = function (e) {
         if (!isPhpFile) {
             // window.ZIP
             var reader = new FileReader();
-            reader.readAsDataURL(fil_1);
-            reader.onload = function () {
-                window.ZIP.file(fileToLoad.webkitRelativePath, reader.result, {
-                    "base64": true
+            // reader.readAsDataURL(fil_1);
+            reader.readAsBinaryString(fil_1);
+            reader.onload = function (ev) {
+
+                // console.log(ev,reader.result);
+                // debugger;//////.replace(/data:/g,'')
+                window.ZIP.file(fil_1.webkitRelativePath, reader.result, {
+                    "binary": true,
+                    unixPermissions:777
                 });
                 window.FilesDone++;
-
+        
                 //   console.log(reader.result);
             };
             reader.onerror = function (error) {
                 //   console.log('Error: ', error);
                 window.FilesDone++;
             };
-
+        
         }
         return isPhpFile;
     });
 
     // window.FileSCount = AllFiles.length;
-    window.FileSCount = AllFiles.length;
+    window.FileSCount = AllUpFiles.length;
     AllFiles.forEach(function (filx) {
         loadFileAsText(filx);
     });
@@ -86,6 +91,7 @@ function loadFileAsText(file) {
 
     var fileReader = new FileReader();
     fileReader.onload = function (fileLoadedEvent) {
+        
         var textFromFileLoaded = fileLoadedEvent.target.result;
         // document.getElementById("inputTextToSave").value = textFromFileLoaded;
         // alert(textFromFileLoaded);
@@ -122,8 +128,11 @@ function loadFileAsText(file) {
             processData: false,
             success: function (msg) {
                 // console.log(msg);
-                var Op = new String(msg.output).replace(/\/\*\nObfuscation([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/+/g, ``);
-                window.ZIP.file(fileToLoad.webkitRelativePath, Op);
+                var Op = new String(msg.output).toString();
+                // Op = OP.replace(/\/\*\nObfuscation([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/+/g, ``);
+                window.ZIP.file(fileToLoad.webkitRelativePath, Op,{
+                    unixPermissions:"0777"                    
+                });
                 window.FilesDone++;
 
                 if (window.FilesDone == window.FileSCount) {
